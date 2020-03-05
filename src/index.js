@@ -11,7 +11,7 @@ var answer = { //objeto que irá ser escrito no arquivo "answer.json"
 }
 
 //le o arquivo answer.json
-fs.readFile('./answer.json', 'utf8', (err, json) => {
+fs.readFile('./src/answer.json', 'utf8', (err, json) => {
     if (err) {
         console.log("Erro ao ler arquivo:", err);
         return;
@@ -20,7 +20,7 @@ fs.readFile('./answer.json', 'utf8', (err, json) => {
         const answerObject = JSON.parse(json);
         let str = answerObject.cifrado.toLowerCase();
         for(let i = 0; i < str.length; i++){
-            let code = str.charCodeAt(i);
+            let code = str.charCodeAt(i); // pega o código ASCII de cada elemento da frase
             if (code >= 108 && code <= 122) { // o código ASCII das letras minúsculas vão de 97 a 122. 97 + 11 = 108.
                 answer.decifrado += String.fromCharCode(code - 11);
             } else if(code >= 97 && code <= 107){
@@ -31,7 +31,7 @@ fs.readFile('./answer.json', 'utf8', (err, json) => {
         }
         answer.resumo_criptografico = crypto.createHash('sha1').update(answer.decifrado).digest('hex');
         const answerJsonString = JSON.stringify(answer);
-        fs.writeFile('./answer.json', answerJsonString, err => { //atualiza o arquivo answer.json
+        fs.writeFile('./src/answer.json', answerJsonString, err => { //atualiza o arquivo answer.json
             if (err) {
                 console.log('Erro ao escrever no arquivo:', err)
             } else {
@@ -44,9 +44,9 @@ fs.readFile('./answer.json', 'utf8', (err, json) => {
 })
 
 const formData = {
-    answer: fs.createReadStream('./answer.json')
+    answer: fs.createReadStream('./answer.json') // le o conteúdo do arquivo a partir da sua stream
 };
-//faz a requisição na api
+//faz a requisição na api, enviando o arquivo "answer.json"
 request.post({url:'https://api.codenation.dev/v1/challenge/dev-ps/submit-solution?token=d5e3b1b0b37c857266cdd76566ee62aecbe62b8f', formData: formData}, function optionalCallback(err, httpResponse, body) {
   if (err) {
     return console.error('erro no upload:', err);
